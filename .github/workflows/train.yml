@@ -1,0 +1,55 @@
+name: fa-trainer
+run-name: fa-${{ inputs.mode }} ${{ inputs.req_id }}
+on:
+  workflow_dispatch:
+    inputs:
+      mode:
+        description: train or chat
+        default: train
+      preset:
+        description: model preset
+        default: persian
+      sig:
+        description: model signature
+        default: ""
+      init:
+        description: use init/model.pt (1 or 0)
+        default: "0"
+      custom:
+        description: use custom_model.py (1 or 0)
+        default: "0"
+      prompt:
+        description: chat prompt
+        default: ""
+      req_id:
+        description: chat request id
+        default: ""
+permissions:
+  contents: write
+concurrency:
+  group: fa-${{ inputs.mode }}-${{ inputs.req_id }}
+  cancel-in-progress: false
+jobs:
+  run:
+    runs-on: ubuntu-latest
+    timeout-minutes: 355
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-python@v5
+        with:
+          python-version: "3.11"
+      - name: Install deps
+        run: |
+          pip install torch --index-url https://download.pytorch.org/whl/cpu
+          pip install pyarrow
+      - name: Run
+        env:
+          MODE: ${{ inputs.mode }}
+          PRESET: ${{ inputs.preset }}
+          SIG: ${{ inputs.sig }}
+          INIT: ${{ inputs.init }}
+          CUSTOM: ${{ inputs.custom }}
+          PROMPT: ${{ inputs.prompt }}
+          REQ_ID: ${{ inputs.req_id }}
+          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+        run: python train.py
