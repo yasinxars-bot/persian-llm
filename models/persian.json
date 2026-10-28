@@ -1,0 +1,9 @@
+{
+  "n_layer": 6,
+  "n_head": 6,
+  "n_embd": 192,
+  "block_size": 192,
+  "batch_size": 32,
+  "lr": 0.001,
+  "total_steps": 40000
+}
